@@ -1,38 +1,14 @@
-export default {
-  async fetch(request, env, ctx) {
-    const { method, url } = request;
-    const { pathname } = new URL(url);
-
-    if (method === "POST" && pathname === "/upload") {
-      const formData = await request.formData();
-      const file = formData.get("file");
-
-      if (!file || typeof file === "string") {
-        return new Response("Invalid file", { status: 400 });
-      }
-
-      await env.BUCKET.put(file.name, file.stream());
-
-      return new Response(`Uploaded: ${file.name}`, { status: 200 });
-    }
-
-    if (method === "GET" && pathname === "/upload.html") {
-      const html = `
-        <!DOCTYPE html>
-        <html>
-        <body>
-          <h1>문서 업로드</h1>
-          <form action="/upload" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" />
-            <button type="submit">업로드</button>
-          </form>
-        </body>
-        </html>`;
-      return new Response(html, {
-        headers: { "Content-Type": "text/html" },
-      });
-    }
-
-    return new Response("Only POST method allowed", { status: 405 });
-  },
-};
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문서 업로드</title>
+</head>
+<body>
+  <h1>문서 업로드</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" required />
+    <button type="submit">업로드</button>
+  </form>
+</body>
+</html>
